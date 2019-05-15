@@ -7,6 +7,7 @@ import (
 	"io"
 	"log"
 	"os"
+	"strings"
 )
 
 // Question struct to hold a question and answer
@@ -41,16 +42,24 @@ func main() {
 		})
 	}
 
-	// questionsJSON, _ := json.Marshal(questions)
-	fmt.Println(questions)
+	// Store user's answers
+	score := 0
 
-	// Loop through list of questions asking them to user
-	for _, quest := range questions {
+	// Quiz loop through list of questions asking them to user
+	for i, quest := range questions {
 		// ask the question
 		reader := bufio.NewReader(os.Stdin)
-		fmt.Print(quest.Question)
+		fmt.Printf("Problem #%d: %s = ", i+1, quest.Question)
 
-		// wait for user input
+		// get user input
 		txt, _ := reader.ReadString('\n')
+
+		// increment score if correct; (trim extra whitespace)
+		if strings.TrimSpace(txt) == strings.TrimSpace(quest.Answer) {
+			score++
+		}
 	}
+
+	// Print out user score and number of questions at the end
+	fmt.Printf("You scored %d out of %d\n", score, len(questions))
 }
