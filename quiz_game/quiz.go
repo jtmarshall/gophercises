@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"encoding/csv"
+	"flag"
 	"fmt"
 	"io"
 	"log"
@@ -17,9 +18,11 @@ type Question struct {
 }
 
 func main() {
-	filename := "problems.csv"
+	// Read filename from command line flag, otherwise default to "problems.csv"
+	csvFlag := flag.String("csv", "problems.csv", "CSV filename for questions (default is \"problems.csv\"")
+	flag.Parse()
 	// open questions file, and read csv
-	csvFile, _ := os.Open(filename)
+	csvFile, _ := os.Open(*csvFlag)
 	r := csv.NewReader(bufio.NewReader(csvFile))
 
 	// initialize list of questions
@@ -42,7 +45,7 @@ func main() {
 		})
 	}
 
-	// Store user's answers
+	// Store user's score
 	score := 0
 
 	// Quiz loop through list of questions asking them to user
