@@ -3,11 +3,13 @@ package main
 import (
 	"bufio"
 	"encoding/csv"
+	"flag"
 	"fmt"
 	"io"
 	"log"
 	"os"
 	"strings"
+	"time"
 )
 
 // Question struct to hold a question and answer
@@ -17,9 +19,13 @@ type Question struct {
 }
 
 func main() {
-	filename := "problems.csv"
+	// Read filename from command line flag, otherwise default to "problems.csv"
+	csvFlag := flag.String("csv", "problems.csv", "CSV filename for questions (default is \"problems.csv\"")
+	// Quiz timer flag
+	timerFlag := flag.Int("timer", 30, "Set time limit of quiz (default is 30sec)")
+	flag.Parse()
 	// open questions file, and read csv
-	csvFile, _ := os.Open(filename)
+	csvFile, _ := os.Open(*csvFlag)
 	r := csv.NewReader(bufio.NewReader(csvFile))
 
 	// initialize list of questions
@@ -42,8 +48,24 @@ func main() {
 		})
 	}
 
-	// Store user's answers
+	// Store user's score
 	score := 0
+
+	// Ask user to hit Enter to start the Quiz
+	reader := bufio.NewReader(os.Stdin)
+	fmt.Println("Hit ENTER to Start")
+	_, err := reader.ReadString('\n')
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Start timer
+	timer := time.NewTimer(time.Duration(*timerFlag) * time.Second)
+	go func() {
+		<-timer.C
+		fmt.Printf("\nTimes up!\nYou scored %d out of %d\n", score, len(questions))
+		os.Exit(0)
+	}()
 
 	// Quiz loop through list of questions asking them to user
 	for i, quest := range questions {
