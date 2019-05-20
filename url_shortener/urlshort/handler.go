@@ -12,8 +12,21 @@ import (
 // http.Handler will be called instead.
 func MapHandler(pathsToUrls map[string]string, fallback http.Handler) http.HandlerFunc {
 
+	// Return func gets converted to http.HandlerFunc since we already declared that's what we're returning.
 	return func(w http.ResponseWriter, r *http.Request) {
+		// get url from request (just the path part)
+		path := r.URL.Path
 
+		// if we can match a path
+		//   then redirect to it
+		// if we have a destination inside the paths
+		if dest, ok := pathsToUrls[path]; ok {
+			http.Redirect(w, r, dest, http.StatusFound)
+			return
+		}
+
+		// else...
+		fallback.ServeHTTP(w, r)
 	}
 }
 
