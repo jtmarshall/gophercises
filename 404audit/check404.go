@@ -12,7 +12,7 @@ import (
 )
 
 func main() {
-	// Read filename from command line flag, otherwise default to "problems.csv"
+	// Read filename from command line flag, otherwise default to "404.csv"
 	csvFlag := flag.String("csv", "404.csv", "CSV filename for url's to check")
 	flag.Parse()
 	// open questions file, and read csv
@@ -54,6 +54,7 @@ func getStatus(url string) int {
 	resp, respErr := http.Get(url)
 	if respErr != nil {
 		fmt.Println(respErr)
+		return 0
 	}
 	defer resp.Body.Close()
 
